@@ -1,4 +1,3 @@
-// src/components/Todohead.jsx
 import React, { useState, useEffect } from 'react';
 
 const Todohead = () => {
@@ -28,10 +27,11 @@ const Todohead = () => {
   }, []);
 
   return (
-    <div className="p-4 bg-blue-800 text-white dark:bg-blue-300 dark:text-black">
+    <div className="p-4 text-black w-screen flex flex-col items-center">
+      <img src={`${process.env.PUBLIC_URL}/fmbc.png`} alt="Logo" className="w-16 h-16 mb-4" />
       <h1 className="text-2xl">Today's ToDo List</h1>
       <p>{date.toLocaleDateString()}</p>
-      <blockquote className="mt-2 italic">"{quote}"</blockquote>
+      <blockquote className="mt-2 italic text-center">"{quote}"</blockquote>
     </div>
   );
 };

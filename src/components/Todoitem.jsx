@@ -23,7 +23,7 @@ const Todoitem = ({ todo, toggleTodo, removeTodo, updateTodo }) => {
   };
 
   return (
-    <li className="flex items-center justify-between mb-2 p-2 bg-white shadow rounded dark:text-black">
+    <li className="flex items-center justify-between mb-2 p-2 bg-white shadow rounded">
       {isEditing ? (
         // 수정 모드일 때
         <>
@@ -58,7 +58,7 @@ const Todoitem = ({ todo, toggleTodo, removeTodo, updateTodo }) => {
           <button className="bg-blue-500 text-white p-2 mr-2" onClick={handleEdit}>
             Edit
           </button>
-          <button className="bg-red-700 text-white p-2 dark:bg-red-300 dark:text-black" onClick={removeTodo}>
+          <button className="bg-red-700 text-white p-2" onClick={removeTodo}>
             Remove
           </button>
         </>

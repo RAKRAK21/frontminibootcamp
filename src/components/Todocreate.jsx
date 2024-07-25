@@ -18,13 +18,13 @@ const Todocreate = ({ addTodo }) => {
       {/* 새로운 할 일의 텍스트를 입력하는 필드 */}
       <input
         type="text"
-        className="border p-2 flex-grow dark:text-black "
+        className="border p-2 flex-grow "
         value={newTodo}
         onChange={(e) => setNewTodo(e.target.value)}
         placeholder="Add a new task"
       />
       {/* 추가 버튼 */}
-      <button type="submit" className="bg-blue-800 text-white dark:bg-blue-200 dark:text-black p-2 ml-2">
+      <button type="submit" className="bg-gray-800 text-white p-2 ml-2">
         Add
       </button>
     </form>

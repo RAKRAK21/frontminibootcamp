@@ -2,10 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+/* body {
   @apply text-black dark:text-white;
 }
 
 html {
   @apply bg-white dark:bg-slate-800;
-}
+} */
+
