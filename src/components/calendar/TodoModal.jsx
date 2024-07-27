@@ -1,15 +1,15 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 
 const TodoModal = ({ isOpen, onClose, date, todos }) => {
   const modalRef = useRef();
 
-  const handleClickOutside = (event) => {
-    if (modalRef.current && !modalRef.current.contains(event.target)) {
-      onClose();
-    }
-  };
-
   useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
+
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
@@ -17,9 +17,9 @@ const TodoModal = ({ isOpen, onClose, date, todos }) => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !date) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -29,7 +29,7 @@ const TodoModal = ({ isOpen, onClose, date, todos }) => {
           {todos.length > 0 ? (
             todos.map((todo, index) => (
               <li key={index} className="mb-2">
-                {todo.text}
+                <input type="checkbox" checked={todo.completed} readOnly /> {todo.text}
               </li>
             ))
           ) : (

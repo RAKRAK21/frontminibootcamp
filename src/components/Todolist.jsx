@@ -1,109 +1,93 @@
-// src/components/Todolist.jsx
 import React, { useState, useEffect } from 'react';
-
 import Todohead from './Todohead';
 import Todocreate from './Todocreate';
 import Todoitem from './Todoitem';
-// import ThemeButton from './ThemeButton';
+// import { getDate } from 'date-fns';
 
-const Todolist = ({currentDate}) => {
-  const [todos, setTodos] = useState([]); // 할 일 목록을 저장할 상태
-  // 현재 날짜의 투두리스트 로드
-  useEffect(() => {
-    if (!(currentDate instanceof Date)) return;
+const Todolist = () => {
+  const getDateKey = (date) => {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  };
 
-    const dateKey = currentDate.toISOString().split('T')[0];
-    const savedTodos = JSON.parse(localStorage.getItem(dateKey)) || [];
-    setTodos(savedTodos);
-  }, [currentDate]);
+  const [todos, setTodos] = useState(() => {
+    // 초기 상태를 함수로 제공하여 컴포넌트 마운트 시 한 번만 실행되도록 함
+    const savedDate = localStorage.getItem('currentDate');
+    const currentDate = savedDate ? new Date(savedDate) : new Date();
+    const dateKey = getDateKey(currentDate);
+    return JSON.parse(localStorage.getItem(dateKey)) || [];
+  });
+  
+  const [currentDate, setCurrentDate] = useState(() => {
+    const savedDate = localStorage.getItem('currentDate');
+    return savedDate ? new Date(savedDate) : new Date();
+  });
 
-  // 투두리스트가 변경될 때마다 로컬 스토리지에 저장
-  useEffect(() => {
-    if (!(currentDate instanceof Date)) return;
-
-    const dateKey = currentDate.toISOString().split('T')[0];
-    localStorage.setItem(dateKey, JSON.stringify(todos));
-  }, [todos, currentDate]);
-
-  // 00시가 되면 새로운 날의 투두리스트로 초기화
   useEffect(() => {
     const checkDateChange = () => {
-      const currentDateKey = new Date().toISOString().split('T')[0];
-      const dateKey = currentDate.toISOString().split('T')[0];
-      if (currentDateKey !== dateKey) {
-        localStorage.setItem(dateKey, JSON.stringify(todos));
-        setTodos([]);
+      const newDate = new Date();
+      if (getDateKey(newDate) !== getDateKey(currentDate)) {
+        setCurrentDate(newDate);
+        localStorage.setItem('currentDate', newDate.toISOString()); // 로컬 스토리지에 새로운 현재 날짜 저장.
+        const dateKey = getDateKey(newDate); // 새로운 날짜 키 생성
+        const savedTodos = JSON.parse(localStorage.getItem(dateKey)) || []; // 로컬 스토리지에서 새로운 날짜의 할 일 목록 가져옴.
+        setTodos(savedTodos);
       }
-    };
+    }; // 날짜가 변경되면 그 때 할일 목록을 로컬에 저장해줌.
 
-    const intervalId = setInterval(checkDateChange, 60000); // 1분마다 날짜 변경 체크
+    // 1분마다 날짜 변경 체크
+    const intervalId = setInterval(checkDateChange, 60000);
 
-    return () => clearInterval(intervalId);
-  }, [currentDate, todos]);
+    return () => clearInterval(intervalId); // 컴포넌트 언마운트 시 인터벌 정리
+  }, [currentDate]);
 
-  // // 로컬스토리지에서 투두 리스트를 불러옴
-  // useEffect(() => {
-  //   const savedTodos = localStorage.getItem('todos');
-  //   if (savedTodos) {
-  //     setTodos(JSON.parse(savedTodos));
-  //   }
-  // }, []);
+  useEffect(() => {
+    const dateKey = getDateKey(currentDate);
+    localStorage.setItem(dateKey, JSON.stringify(todos));
+    localStorage.setItem('currentDate', currentDate.toISOString());
+  }, [todos, currentDate]); // 투두가 변경되거나 currentdate가 변경될 때마다 로컬에 저장.
 
-  // //투두 리스트를 로컬스토리지에 저장
-  // const saveTodos = (newTodos) => {
-  //   setTodos(newTodos);
-  //   localStorage.setItem('todos', JSON.stringify(newTodos));
-  // };
+  const addTodo = (text) => {
+    const newTodos = [...todos, { text, completed: false }];
+    setTodos(newTodos);
+  };
 
-// 새로운 할 일을 추가하는 함수
-const addTodo = (text) => {
-  const newTodos = [...todos, { text, completed: false }];
-  setTodos(newTodos);
-};
+  const toggleTodo = (index) => {
+    const newTodos = [...todos];
+    newTodos[index].completed = !newTodos[index].completed;
+    setTodos(newTodos);
+  };
 
-// 할 일의 완료 상태를 토글하는 함수
-const toggleTodo = (index) => {
-  const newTodos = [...todos];
-  newTodos[index].completed = !newTodos[index].completed;
-  setTodos(newTodos);
-};
+  const removeTodo = (index) => {
+    const newTodos = [...todos];
+    newTodos.splice(index, 1);
+    setTodos(newTodos);
+  };
 
-// 할 일을 삭제하는 함수
-const removeTodo = (index) => {
-  const newTodos = [...todos];
-  newTodos.splice(index, 1);
-  setTodos(newTodos);
-};
-
-// 할 일을 수정하는 함수
-const updateTodo = (index, newText) => {
-  const newTodos = [...todos];
-  newTodos[index].text = newText;
-  setTodos(newTodos);
-};
+  const updateTodo = (index, newText) => {
+    const newTodos = [...todos];
+    newTodos[index].text = newText;
+    setTodos(newTodos);
+  };
 
   return (
     <>
-    <Todohead />
-    <div className="flex flex-col items-center">
-      {/* <ThemeButton /> */}
-      <div className="w-full max-w-md p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-        {/* 새로운 할 일을 추가하는 컴포넌트 */}
-        <Todocreate addTodo={addTodo} />
-        <ul >
-          {todos.map((todo, index) => (
-            // 개별 할 일을 표시하는 컴포넌트
-            <Todoitem
-              key={index}
-              todo={todo}
-              toggleTodo={() => toggleTodo(index)}
-              removeTodo={() => removeTodo(index)}
-              updateTodo={(newText) => updateTodo(index, newText)}
-            />
-          ))}
-        </ul>
+      <Todohead currentDate={currentDate} />
+      <div className="flex flex-col items-center">
+        <div className="w-full max-w-md p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+          <Todocreate addTodo={addTodo} />
+          <ul>
+            {todos.map((todo, index) => (
+              <Todoitem
+                key={index}
+                todo={todo}
+                toggleTodo={() => toggleTodo(index)}
+                removeTodo={() => removeTodo(index)}
+                updateTodo={(newText) => updateTodo(index, newText)}
+              />
+            ))}
+          </ul>
+        </div>
       </div>
-    </div>
     </>
   );
 };

@@ -14,8 +14,8 @@ function App() {
         <Nav />
         <div className="content mt-[60px]"> {/* 네비게이션 바의 높이만큼 패딩을 추가 */}
           <Routes>
-            <Route path="/" element={<Todolist />} />
-            <Route path="/todolist" element={<Todolist />} />
+            <Route path="/" element={<Todolist currentDate={new Date()}/>} />
+            <Route path="/todolist" element={<Todolist currentDate={new Date()}/>} />
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/board" element={<Board />} />
             <Route path="/login" element={<Login />} />
